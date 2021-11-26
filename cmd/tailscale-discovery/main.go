@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"sort"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/function61/gokit/app/aws/lambdautils"
@@ -90,6 +91,9 @@ func getDevicesFromTailscale(ctx context.Context, tailnet string, apiKey string)
 			Hostname: apiDevice.Hostname,
 		})
 	}
+
+	// stable return order
+	sort.Slice(devices, func(i, j int) bool { return devices[i].Hostname < devices[j].Hostname })
 
 	return devices, nil
 }
