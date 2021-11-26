@@ -11,7 +11,7 @@ import (
 	"github.com/function61/gokit/net/http/ezhttp"
 	"github.com/function61/gokit/net/http/httputils"
 	"github.com/function61/gokit/os/osutil"
-	"github.com/joonas-fi/tailscale-discovery/pkg/tailscalediscoveryclient"
+	"github.com/function61/tailscale-discovery/pkg/tailscalediscoveryclient"
 )
 
 func main() {

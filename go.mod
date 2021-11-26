@@ -1,4 +1,4 @@
-module github.com/joonas-fi/tailscale-discovery
+module github.com/function61/tailscale-discovery
 
 go 1.16
 
