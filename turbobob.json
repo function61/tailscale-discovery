@@ -1,0 +1,21 @@
+{
+	"for_description_of_this_file_see": "https://github.com/function61/turbobob",
+	"version_major": 1,
+	"project_name": "tailscale-discovery",
+	"project_emoji_icon": "",
+	"builders": [
+		{
+			"name": "default",
+			"uses": "docker://fn61/buildkit-golang:20210912_1048_2f1d31cd",
+			"commands": {
+				"build": ["bin/build.sh"],
+				"dev": ["bash"]
+			},
+			"mount_destination": "/workspace",
+			"workdir": "/workspace"
+		}
+	],
+	"os_arches": {
+		"linux-amd64": true
+	}
+}
