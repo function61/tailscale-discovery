@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Function61 = "https://function61"
+	Function61 = "https://function61.com"
 	Localhost  = "http://localhost"
 )
 
