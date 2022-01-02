@@ -70,6 +70,7 @@ type tailscaleAPIDevicesOutput struct {
 	Devices []struct {
 		Addresses []string `json:"addresses"`
 		Hostname  string   `json:"hostname"`
+		Tags      []string `json:"tags"`
 	} `json:"devices"`
 }
 
@@ -89,6 +90,13 @@ func getDevicesFromTailscale(ctx context.Context, tailnet string, apiKey string)
 		devices = append(devices, tailscalediscoveryclient.Device{
 			IPv4:     apiDevice.Addresses[0], // first is always IPv4
 			Hostname: apiDevice.Hostname,
+			Tags: func() []string {
+				if apiDevice.Tags != nil {
+					return apiDevice.Tags
+				} else {
+					return []string{} // so it's not marshaled as "null"
+				}
+			}(),
 		})
 	}
 

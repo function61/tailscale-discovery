@@ -12,8 +12,9 @@ const (
 )
 
 type Device struct {
-	IPv4     string `json:"ip_v4"`
-	Hostname string `json:"hostname"`
+	IPv4     string   `json:"ip_v4"`
+	Hostname string   `json:"hostname"`
+	Tags     []string `json:"tags"`
 }
 
 type Client struct {
