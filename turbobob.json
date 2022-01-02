@@ -11,6 +11,7 @@
 				"build": ["bin/build.sh"],
 				"dev": ["bash"]
 			},
+			"dev_http_ingress": "80",
 			"mount_destination": "/workspace",
 			"workdir": "/workspace"
 		}
