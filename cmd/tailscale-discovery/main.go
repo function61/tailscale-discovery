@@ -60,10 +60,7 @@ func newServerHandler() (http.Handler, error) {
 		return nil, err
 	}
 
-	tailnet, err := osutil.GetenvRequired("TAILSCALE_TAILNET")
-	if err != nil {
-		return nil, err
-	}
+	tailnet := coalesce(os.Getenv("TAILSCALE_TAILNET"), "-") // '-' means the default Tailnet the API key has access to
 
 	routes := http.NewServeMux()
 	routes.HandleFunc("/tailscale-discovery/api/devices", func(w http.ResponseWriter, r *http.Request) {
@@ -117,4 +114,12 @@ func getDevicesFromTailscale(ctx context.Context, tailnet string, apiKey string)
 	sort.Slice(devices, func(i, j int) bool { return devices[i].Hostname < devices[j].Hostname })
 
 	return devices, nil
+}
+
+func coalesce(a, b string) string {
+	if a != "" {
+		return a
+	} else {
+		return b
+	}
 }
