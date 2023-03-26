@@ -35,6 +35,6 @@ func (c Client) Devices(ctx context.Context) ([]Device, error) {
 		ctx,
 		c.baseURL+"/tailscale-discovery/api/devices",
 		ezhttp.AuthBearer(c.apiToken),
-		ezhttp.RespondsJsonAllowUnknownFields(&devices))
+		ezhttp.RespondsJSONAllowUnknownFields(&devices))
 	return devices, err
 }

@@ -6,9 +6,9 @@
 	"builders": [
 		{
 			"name": "default",
-			"uses": "docker://fn61/buildkit-golang:20210912_1048_2f1d31cd",
+			"uses": "docker://fn61/buildkit-golang:20230219_1208_a7139a03",
 			"commands": {
-				"build": ["bin/build.sh"],
+				"build": ["build-go-project.sh", "--directory=cmd/tailscale-discovery/", "--binary-basename=tailscale-discovery", "--aws-lambda-zip"],
 				"dev": ["bash"]
 			},
 			"dev_http_ingress": "80",

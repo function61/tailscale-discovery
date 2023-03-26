@@ -34,8 +34,9 @@ func server(ctx context.Context) error {
 	}
 
 	srv := &http.Server{
-		Handler: handler,
-		Addr:    ":80",
+		Handler:           handler,
+		Addr:              ":80",
+		ReadHeaderTimeout: httputils.DefaultReadHeaderTimeout,
 	}
 
 	return httputils.CancelableServer(ctx, srv, srv.ListenAndServe)
@@ -80,7 +81,7 @@ func getDevicesFromTailscale(ctx context.Context, tailnet string, apiKey string)
 		ctx,
 		fmt.Sprintf("https://api.tailscale.com/api/v2/tailnet/%s/devices", tailnet),
 		ezhttp.AuthBasic(apiKey, ""), // <- unusual way
-		ezhttp.RespondsJsonAllowUnknownFields(&devicesOutput),
+		ezhttp.RespondsJSONAllowUnknownFields(&devicesOutput),
 	); err != nil {
 		return nil, fmt.Errorf("Tailscale API: %w", err)
 	}

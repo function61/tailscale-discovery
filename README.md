@@ -1,3 +1,6 @@
+⬆️ For table of contents, click the above icon
+
+
 ![Build status](https://github.com/function61/tailscale-discovery/workflows/Build/badge.svg)
 
 Tailscale discovery
