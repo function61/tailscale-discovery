@@ -27,3 +27,29 @@ Usage
 
 Serve this Lambda function from Lambda. It is assumed that you have a reverse proxy in front of it
 that implements your authorization (even though this is not very sensitive data).
+
+
+Keeping the Tailscale API key updated in Lambda
+-----------------------------------------------
+
+There is a CLI command which updates the API key (stored as Lambda ENV variable).
+
+This will soon be hooked up to Cloudwatch scheduled events so it does it automatically. TODO tasks:
+
+- [ ] Automatically request new API key from Tailscale control panel (before the old has expired)
+
+It is a good idea to use this IAM policy for your CLI session (or Lambda handler) to limit the AWS
+access keys' power to only update config of this specific function. Here's the inline policy:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "lambda:UpdateFunctionConfiguration",
+            "Resource": "arn:aws:lambda:*:*:function:WebTailscaleDiscovery"
+        }
+    ]
+}
+```

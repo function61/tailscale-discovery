@@ -8,10 +8,14 @@ import (
 	"os"
 	"sort"
 
-	"github.com/aws/aws-lambda-go/lambda"
+	lambdahandler "github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/function61/gokit/app/aws/lambdautils"
 	"github.com/function61/gokit/app/cli"
 	"github.com/function61/gokit/app/dynversion"
+	. "github.com/function61/gokit/builtin"
 	"github.com/function61/gokit/encoding/jsonfile"
 	"github.com/function61/gokit/net/http/ezhttp"
 	"github.com/function61/gokit/net/http/httputils"
@@ -24,7 +28,7 @@ func main() {
 	if lambdautils.InLambda() {
 		handler, err := newServerHandler()
 		osutil.ExitIfError(err)
-		lambda.StartHandler(lambdautils.NewLambdaHttpHandlerAdapter(handler))
+		lambdahandler.StartHandler(lambdautils.NewLambdaHttpHandlerAdapter(handler))
 		return
 	}
 
@@ -35,6 +39,8 @@ func main() {
 		Args:    cobra.NoArgs,
 		Run:     cli.RunnerNoArgs(server),
 	}
+
+	app.AddCommand(renewAPIKeyEntrypoint())
 
 	osutil.ExitIfError(app.Execute())
 }
@@ -114,6 +120,37 @@ func getDevicesFromTailscale(ctx context.Context, tailnet string, apiKey string)
 	sort.Slice(devices, func(i, j int) bool { return devices[i].Hostname < devices[j].Hostname })
 
 	return devices, nil
+}
+
+func renewAPIKeyEntrypoint() *cobra.Command {
+	return &cobra.Command{
+		Use:   "renew-apikey",
+		Short: "Updates to Lambda the new API key",
+		Args:  cobra.NoArgs,
+		Run: cli.RunnerNoArgs(func(ctx context.Context, _ *log.Logger) error {
+			newApiKey, err := osutil.GetenvRequired("NEW_TAILSCALE_API_KEY")
+			if err != nil {
+				return err
+			}
+
+			awsSession, err := session.NewSession()
+			if err != nil {
+				return err
+			}
+
+			lambdaSvc := lambda.New(awsSession, aws.NewConfig().WithRegion("eu-central-1"))
+
+			_, err = lambdaSvc.UpdateFunctionConfigurationWithContext(ctx, &lambda.UpdateFunctionConfigurationInput{
+				FunctionName: Pointer("WebTailscaleDiscovery"),
+				Environment: &lambda.Environment{
+					Variables: map[string]*string{
+						"TAILSCALE_API_KEY": &newApiKey,
+					},
+				},
+			})
+			return err
+		}),
+	}
 }
 
 func coalesce(a, b string) string {
