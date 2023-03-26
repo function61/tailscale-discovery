@@ -3,16 +3,21 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"sort"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/function61/gokit/app/aws/lambdautils"
+	"github.com/function61/gokit/app/cli"
+	"github.com/function61/gokit/app/dynversion"
 	"github.com/function61/gokit/encoding/jsonfile"
 	"github.com/function61/gokit/net/http/ezhttp"
 	"github.com/function61/gokit/net/http/httputils"
 	"github.com/function61/gokit/os/osutil"
 	"github.com/function61/tailscale-discovery/pkg/tailscalediscoveryclient"
+	"github.com/spf13/cobra"
 )
 
 func main() {
@@ -23,11 +28,18 @@ func main() {
 		return
 	}
 
-	osutil.ExitIfError(server(
-		osutil.CancelOnInterruptOrTerminate(nil)))
+	app := &cobra.Command{
+		Use:     os.Args[0],
+		Short:   "Tailscale discovery",
+		Version: dynversion.Version,
+		Args:    cobra.NoArgs,
+		Run:     cli.RunnerNoArgs(server),
+	}
+
+	osutil.ExitIfError(app.Execute())
 }
 
-func server(ctx context.Context) error {
+func server(ctx context.Context, _ *log.Logger) error {
 	handler, err := newServerHandler()
 	if err != nil {
 		return err
